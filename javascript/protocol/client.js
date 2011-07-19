@@ -203,6 +203,11 @@ Faye.Client = Faye.Class({
       }, function(response) {
         if (!response.successful)
           return subscription.setDeferredStatus('failed', Faye.Error.parse(response.error));
+          
+        //TODO:  AASHAY - A silly hack for the bug in the SFDC Streaming Pilot
+        //The subscription acknowledgements are prepended with an OrgId so let's rip that thing out
+        var sfdcOrgIdRegex = /\/00D[a-z0-9]+/gi;
+        response.subscription = response.subscription.replace(sfdcOrgIdRegex,'')
         
         var channels = [].concat(response.subscription);
         this.info('Subscription acknowledged for ? to ?', this._clientId, channels);
